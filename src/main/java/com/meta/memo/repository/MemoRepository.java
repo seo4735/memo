@@ -1,6 +1,7 @@
 package com.meta.memo.repository;
 
 import com.meta.memo.domain.Memo;
+import com.meta.memo.dto.MemoRequestDto;
 import com.meta.memo.dto.MemoResponseDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -55,11 +56,32 @@ public class MemoRepository {
         return memoResponseDtoList;
     }
 
-    public Long update() {
-        return null;
+    // 특정 id의 메모 존재 여부 확인 공용 메서드
+    public Memo findById(Long id) {
+        // DB 조회
+        String sql = "SELECT * FROM memo where id = ?";
+
+        return jdbcTemplate.query( sql, resultSet -> {
+            if(resultSet.next()) {
+                Memo memo = new Memo();
+                memo.setUsername(resultSet.getString("username"));
+                memo.setContents(resultSet.getString("contents"));
+                return memo;
+            } else {
+                return null;
+            }
+        }, id);
     }
 
-    public Long delete() {
-        return null;
+    public Long update(Long id, MemoRequestDto memoRequestDto) {
+        String sql = "UPDATE memo SET username = ?, contents = ? WHERE id = ?";
+        jdbcTemplate.update( sql, memoRequestDto.getUsername(), memoRequestDto.getContents(), id);
+        return id;
+    }
+
+    public Long delete(Long id) {
+        String sql = "DELETE FROM memo WHERE id = ?";
+        jdbcTemplate.update( sql, id);
+        return id;
     }
 }

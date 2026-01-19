@@ -38,49 +38,33 @@ public class MemoService {
     }
 
     public Long updateMemo(@PathVariable Long id, @RequestBody MemoRequestDto memoRequestDto) {
+        MemoRepository memoRepository= new MemoRepository(jdbcTemplate);
+
         // 해당 id의 메모가 존재하는지 확인
-        Memo foundMemo = findById(id);
+        Memo foundMemo = memoRepository.findById(id);
 
         // 메모 내용 수정
         if (foundMemo != null) {
-            String sql = "UPDATE memo SET username = ?, contents = ? WHERE id = ?";
-            jdbcTemplate.update( sql, memoRequestDto.getUsername(), memoRequestDto.getContents(), id);
-
-            return id;
+            Long updatedId = memoRepository.update(id, memoRequestDto);
+            return updatedId;
         } else {
             throw new IllegalArgumentException("선택한 id의 메모는 존재하지 않습니다.");
         }
     }
 
     public Long deleteMemo(@PathVariable Long id) {
+        MemoRepository memoRepository= new MemoRepository(jdbcTemplate);
+
         // 해당 id의 메모가 존재하는지 확인
-        Memo foundMemo = findById(id);
+        Memo foundMemo = memoRepository.findById(id);
 
         // 메모 내용 삭제
         if (foundMemo != null) {
-            String sql = "DELETE FROM memo WHERE id = ?";
-            jdbcTemplate.update( sql, id);
-
-            return id;
+            Long deletedId = memoRepository.delete(id);
+            return deletedId;
         } else {
             throw new IllegalArgumentException("선택한 id의 메모는 존재하지 않습니다.");
         }
     }
 
-    // 특정 id의 메모 존재 여부 확인 공용 메서드
-    private Memo findById(Long id) {
-        // DB 조회
-        String sql = "SELECT * FROM memo where id = ?";
-
-        return jdbcTemplate.query( sql, resultSet -> {
-            if(resultSet.next()) {
-                Memo memo = new Memo();
-                memo.setUsername(resultSet.getString("username"));
-                memo.setContents(resultSet.getString("contents"));
-                return memo;
-            } else {
-                return null;
-            }
-        }, id);
-    }
 }
