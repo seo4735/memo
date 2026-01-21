@@ -12,7 +12,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @NoArgsConstructor
 @Entity
 @Table(name = "memo")
-public class Memo {
+public class Memo extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
