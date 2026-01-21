@@ -36,7 +36,7 @@ public class MemoService {
 
 
     public List<MemoResponseDto> getMemos() {
-        List<MemoResponseDto> memoResponseDtoList = memoRepository.findAll().stream()
+        List<MemoResponseDto> memoResponseDtoList = memoRepository.findAllByOrderByCreatedAtDesc().stream()
                 .map(MemoResponseDto::new).toList();
         return memoResponseDtoList;
     }
